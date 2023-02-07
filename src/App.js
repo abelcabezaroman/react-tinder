@@ -1,22 +1,38 @@
-import logo from './logo.svg';
-import './App.css';
+import "./App.css";
+import SwingGallery from "./components/SwingGallery/SwingGallery";
+import { useEffect, useState } from "react";
 
 function App() {
+  const [users, setUsers] = useState([]);
+  const [countLikes, setCountLikes] = useState(0);
+  const [countDislikes, setCountDislikes] = useState(0);
+
+  const onSwipe = (direction) => {
+    console.log(direction)
+    if (direction === "left" || direction === "down") {
+      setCountDislikes(countDislikes + 1);
+    } else {
+      setCountLikes(countLikes + 1);
+    }
+  };
+
+  const getUsers = async () => {
+    const res = await fetch("http://localhost:3000/users");
+    const data = await res.json();
+
+    setUsers(data);
+  };
+
+  useEffect(() => {
+    getUsers();
+  }, []);
+
   return (
     <div className="App">
       <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
+        <SwingGallery onSwipe={onSwipe} data={users}></SwingGallery>
+        <p>Likes: {countLikes}</p>
+        <p>Dislikes: {countDislikes}</p>
       </header>
     </div>
   );
